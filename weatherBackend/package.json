@@ -1,0 +1,20 @@
+{
+  "name": "weatherbackend",
+  "version": "1.0.0",
+  "description": "A backend for weather applications.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "weather",
+    "REST",
+    "Veff213"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4"
+  }
+}
