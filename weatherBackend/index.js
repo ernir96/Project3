@@ -12,8 +12,8 @@ var stations = [
     {id: 2, description: "Akureyri", lat: 65.6856, lon: 18.1002, observations: [1]}
 ];
 var observations = [
-    {id: 1, date: 1551885104266, returnArr: -2.7, windSpeed: 2.0, windDir: "ese", prec: 0.0, hum: 82.0},
-    {id: 2, date: 1551885137409, returnArr: 0.6, windSpeed: 5.0, windDir: "n", prec: 0.0, hum: 50.0},
+    {id: 1, date: 1551885104266, temp: -2.7, windSpeed: 2.0, windDir: "ese", prec: 0.0, hum: 82.0},
+    {id: 2, date: 1551885137409, temp: 0.6, windSpeed: 5.0, windDir: "n", prec: 0.0, hum: 50.0},
 ];
 function getMaxId(stations){
     var maxId = 1;
