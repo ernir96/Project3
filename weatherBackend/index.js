@@ -11,8 +11,6 @@ var stations = [
     {id: 1, description: "Reykjavik", lat: 64.1275, lon: 21.9028, observations: [2]},
     {id: 2, description: "Akureyri", lat: 65.6856, lon: 18.1002, observations: [1]}
 ];
-var stationId = stations.length;
-var observationId = observations.length;
 
 //The following is an example of an array of two observations.
 //Note that an observation does not know which station it belongs to!
@@ -21,7 +19,34 @@ var observations = [
     {id: 2, date: 1551885137409, temp: 0.6, windSpeed: 5.0, windDir: "n", prec: 0.0, hum: 50.0},
 ];
 
+var stationId = stations.length;
+var observationId = observations.length;
 //Stations
+
+function validateObservation(req) {
+    for(i = 0; i < req.body.observations.length; i++){
+        var found = false;
+        for(j = 0; j < observations.length; j++){
+            if(req.body.observations[i] == observations[j].id){
+                found = true;
+            } 
+        }
+    }
+    return found;
+}
+
+function validateNumbers(req) {
+    if(isNaN(req.body.lat) || isNaN(req.body.lon)) {
+        return false;
+    } else if(req.body.lat < -90 || req.body.lat > 90) {
+        return false;
+    } else if(req.body.lon < -180 || req.body.lon > 180) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
 app.get('/stations', (req, res) => {
     var returnArr = [];
     for(var i = 0; i < stations.length; i++){
@@ -42,22 +67,12 @@ app.get('/stations/:id', (req, res) => {
     });    
 });
 
-function validateObservation(req) {
-    for(i = 0; i < req.body.observations.length; i++){
-        var found = false;
-        for(j = 0; j < observations.length; j++){
-            if(req.body.observations[i] == observations[j].id){
-                found = true;
-            } 
-        }
-    }
-    return found;
-}
+
 
 app.post('/stations', (req, res) => {
 
-    if(req.body === null || req.body.description === undefined || req.body.lat === undefined || req.body.lon === undefined
-        || !validateObservation(req)){
+    if(req.body === null || req.body.description === undefined
+        || !validateObservation(req) || !validateNumbers(req)){
         res.status(404).json({
             'message': "Missing or invalid station information!"
         }); 
@@ -97,7 +112,8 @@ app.delete('/stations/:id', (req, res) => {
 });
 
 app.put('/stations/:id', (req, res) => {
-    if(req.body === null || req.body.description === undefined || req.body.lat === undefined || req.body.lon === undefined || req.body.observations === undefined){
+    if(req.body === null || req.body.description === undefined
+        || !validateObservation(req) || !validateNumbers(req)){
         res.status(404).json({
             'message': "Missing station information!"
         });
@@ -136,6 +152,10 @@ app.delete('/stations', (req, res) => {
     stations = [];
     res.status(200).json(returnArr);
 });
+
+app.use(function(req, res, next) {
+    console.log()
+})
 
 //Observations
 
