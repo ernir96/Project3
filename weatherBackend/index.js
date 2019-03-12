@@ -15,22 +15,18 @@ var observations = [
     {id: 1, date: 1551885104266, returnArr: -2.7, windSpeed: 2.0, windDir: "ese", prec: 0.0, hum: 82.0},
     {id: 2, date: 1551885137409, returnArr: 0.6, windSpeed: 5.0, windDir: "n", prec: 0.0, hum: 50.0},
 ];
-
-var stationId = stations.length;
-var observationId = observations.length;
-//Stations
-
-function validateObservation(req) {
-    for(i = 0; i < req.body.observations.length; i++){
-        var found = false;
-        for(j = 0; j < observations.length; j++){
-            if(req.body.observations[i] == observations[j].id){
-                found = true;
-            } 
+function getMaxId(stations){
+    var maxId = 1;
+    for(var i = 0; i < stations.length; i++){
+        if(stations[i].id > maxId) {
+            maxId = stations[i].id;
         }
     }
-    return found;
+    return maxId;
 }
+var stationId = getMaxId(stations);
+var observationId = getMaxId(observations);
+//Stations
 
 function validateNumbers(req) {
     if(isNaN(req.body.lat) || isNaN(req.body.lon)) {
@@ -69,7 +65,7 @@ app.get('/stations/:id', (req, res) => {
 app.post('/stations', (req, res) => {
 
     if(req.body === null || req.body.description === undefined
-        || !validateObservation(req) || !validateNumbers(req)){
+        || !validateNumbers(req)){
         res.status(404).json({
             'message': "Missing or invalid station information!"
         }); 
@@ -79,7 +75,7 @@ app.post('/stations', (req, res) => {
             description: req.body.description,
             lat: req.body.lat,
             lon: req.body.lon,
-            observations: req.body.observations
+            observations: []
             }
         stations.push(newStation);
         res.status(201).json(newStation);
@@ -110,7 +106,7 @@ app.delete('/stations/:id', (req, res) => {
 
 app.put('/stations/:id', (req, res) => {
     if(req.body === null || req.body.description === undefined
-        || !validateObservation(req) || !validateNumbers(req)){
+        || !validateNumbers(req)){
         res.status(404).json({
             'message': "Missing station information!"
         });
@@ -121,9 +117,9 @@ app.put('/stations/:id', (req, res) => {
                 stations[i].description = req.body.description;
                 stations[i].lat = req.body.lat;
                 stations[i].lon = req.body.lon;
-                stations[i].observations = req.body.observations;
+                stations[i].observations = [];
 
-                returnArr.push({description: req.body.description, lat: req.body.lat, lon: req.body.lon, observations: req.body.observations})
+                returnArr.push({description: req.body.description, lat: req.body.lat, lon: req.body.lon, observations: []})
                 res.status(200).json(returnArr);
                 return;
             }
