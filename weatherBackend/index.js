@@ -56,9 +56,17 @@ app.post('/stations', (req, res) => {
 });
 
 app.delete('/stations/:id', (req, res) => {
-    res.status(200).json({
-        'message': "Delete station with specific id"
-    }); 
+    for(let i = 0; i < stations.length; i++){
+        if(stations[i].id == req.params.id) {
+            let deleted = stations.splice(i, 1);
+            res.status(200).json(deleted);
+            return;
+        }
+    }
+
+    res.status(404).json({
+        'message': "Station with id " + req.params.id + " not found."
+    });  
 });
 
 app.put('/stations/:id', (req, res) => {
