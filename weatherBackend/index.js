@@ -12,6 +12,7 @@ var stations = [
     {id: 2, description: "Akureyri", lat: 65.6856, lon: 18.1002, observations: [1]}
 ];
 var stationId = stations.length;
+var observationId = observations.length;
 
 //The following is an example of an array of two observations.
 //Note that an observation does not know which station it belongs to!
