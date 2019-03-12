@@ -200,7 +200,7 @@ app.get('/observations/:station/:id', (req, res) => {
 });
 
 app.post('/observations/:station', (req, res) => {
-    if(req.body === null || req.body.returnArr === undefined || req.body.windSpeed === undefined || 
+    if(req.body === null || req.body.temp === undefined || req.body.windSpeed === undefined || 
         req.body.windDir === undefined || req.body.prec === undefined || req.body.hum === undefined){
         res.status(404).json({'message': "Missing station information!"});
     }
@@ -208,7 +208,7 @@ app.post('/observations/:station', (req, res) => {
         var newObservation = {
             id: ++observationId,
             date: Date.now(),
-            returnArr: req.body.returnArr,
+            temp: req.body.temp,
             windSpeed: req.body.windSpeed,
             windDir: req.body.windDir,
             prec: req.body.prec,
