@@ -1,0 +1,2 @@
+//Stations
+index.get('/stations');
