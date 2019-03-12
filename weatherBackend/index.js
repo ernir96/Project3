@@ -70,15 +70,31 @@ app.delete('/stations/:id', (req, res) => {
 });
 
 app.put('/stations/:id', (req, res) => {
-    res.status(200).json({
-        'message': "Update station with specific id"
-    }); 
+    if(req.body === null || req.body.description === undefined || req.body.lat === undefined || req.body.lon === undefined || req.body.observations === undefined){
+        res.status(404).json({
+            'message': "Missing station information!"
+        });
+    } else {
+        for(let i = 0; i < stations.length; i++) {
+            if(stations[i].id == req.params.id) {
+                stations[i].description = req.body.description;
+                stations[i].lat = req.body.lat;
+                stations[i].lon = req.body.lon;
+                stations[i].observations = req.body.observations;
+                res.status(200).json(stations[i]);
+                return;
+            }
+        }
+        res.status(404).json({
+            'message': "Station with id " + req.params.id + " doesn't exist."
+        });
+    }
 });
 
 app.delete('/stations', (req, res) => {
-    res.status(200).json({
-        'message': "Delete all stations"
-    }); 
+    var returnArr = stations.slice();
+    stations = [];
+    res.status(200).json(returnArr);
 });
 
 app.listen(port, hostname, () => {
