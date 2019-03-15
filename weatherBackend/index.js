@@ -28,7 +28,7 @@ var stationId = getMaxId(stations);
 var observationId = getMaxId(observations);
 //Stations
 
-function validateNumbers(req) {
+function validateStationNumbers(req) {
     if(isNaN(req.body.lat) || isNaN(req.body.lon)) {
         return false;
     } else if(req.body.lat < -90 || req.body.lat > 90) {
@@ -65,7 +65,7 @@ app.get('/stations/:id', (req, res) => {
 app.post('/stations', (req, res) => {
 
     if(req.body === null || req.body.description === undefined
-        || !validateNumbers(req)){
+        || !validateStationNumbers(req)){
         res.status(404).json({
             'message': "Missing or invalid station information!"
         }); 
@@ -106,7 +106,7 @@ app.delete('/stations/:id', (req, res) => {
 
 app.put('/stations/:id', (req, res) => {
     if(req.body === null || req.body.description === undefined
-        || !validateNumbers(req)){
+        || !validateStationNumbers(req)){
         res.status(404).json({
             'message': "Missing station information!"
         });
@@ -149,6 +149,19 @@ app.delete('/stations', (req, res) => {
 
 
 // Observations
+function validateObservationNumbers(req) {
+    if(isNaN(req.body.temp) || isNaN(req.body.prec) || isNaN(req.body.date) 
+    || isNaN(req.body.windSpeed) || isNaN(req.body.hum)) {
+        return false;
+    } else if(req.body.prec < 0) {
+        return false;
+    } else if(req.body.hum <= 0 || req.body.hum >= 100) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
 app.get('/stations/:id/observations', (req, res) => {
     returnArr = [];
     var sId = Number(req.params.id);
@@ -195,8 +208,7 @@ app.get('/stations/:station/observations/:id', (req, res) => {
 });
 
 app.post('/stations/:id/observations', (req, res) => {
-    if(req.body === null || req.body.temp === undefined || req.body.windSpeed === undefined || 
-        req.body.windDir === undefined || req.body.prec === undefined || req.body.hum === undefined){
+    if(req.body === null || !validateObservationNumbers(req)){
         res.status(404).json({'message': "Missing station information!"});
     }
     else{
