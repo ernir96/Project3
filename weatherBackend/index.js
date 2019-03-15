@@ -282,7 +282,7 @@ app.delete('/stations/:id/observations', (req, res) => {
 
 //Default: Not supported
 app.use('*', (req, res) => {
-    res.status(405).send('Operation not supported.');
+    res.status(400).send('Operation not supported.');
 });
 
 
