@@ -105,7 +105,7 @@ app.delete('/api/v1/stations/:id', (req, res) => {
 
 app.put('/api/v1/stations/:id', (req, res) => {
     if(req.body === null || req.body.description === undefined
-        || !validateStationNumbers(req)){
+        || req.body.observations === undefined || !validateStationNumbers(req)){
         res.status(404).json({
             'message': "Missing station information!"
         });
@@ -151,7 +151,6 @@ app.delete('/api/v1/stations', (req, res) => {
 function validateObservationNumbers(req) {
     if(isNaN(req.body.temp) || isNaN(req.body.prec)
     || isNaN(req.body.windSpeed) || isNaN(req.body.hum)) {
-        console.log("isnan");
         return false;
     } else if(req.body.prec < 0) {
         return false;
@@ -165,21 +164,14 @@ function validateObservationNumbers(req) {
 app.get('/api/v1/stations/:id/observations', (req, res) => {
     returnArr = [];
     var sId = Number(req.params.id);
-    console.log(sId);
     for(var i = 0; i < stations.length; i++){
         if(sId === stations[i].id){
             for(var j = 0; j < stations[i].observations.length; j++){
-                console.log("length: " + stations[i].observations.length);
                 for(var k = 0; k < observations.length; k++){
-                    console.log(observations[k]);
-                    console.log(stations[i].observations[j]);
                     if(observations[k].id == stations[i].observations[j]){
-                        //console.log(stations[i].observations[j]);
                         returnArr.push(observations[k]);
-                        console.log(observations[k]);
                     }
                 }
-                //returnArr.push(observations[stations[i].observations[j]]);
             }
             res.status(200).json(returnArr);
         }
@@ -190,8 +182,6 @@ app.get('/api/v1/stations/:id/observations', (req, res) => {
 app.get('/api/v1/stations/:station/observations/:id', (req, res) => {
     var id = Number(req.params.id);
     var station = Number(req.params.station);
-    console.log(id);
-    console.log(observations.length);
     for(var i = 0; i < stations.length; i++){
         for(var j = 0; j < stations[i].observations.length; j++){
             if(station === stations[i].id && id == stations[i].observations[j]){
@@ -230,7 +220,6 @@ app.post('/api/v1/stations/:id/observations', (req, res) => {
         prec: req.body.prec,
         hum: req.body.hum
     }
-    console.log(newObservation.id);
     for(var i = 0; i < stations.length; i++){
         if(req.params.id == stations[i].id){
             stations[i].observations.push(newObservation.id);
@@ -265,12 +254,8 @@ app.delete('/api/v1/stations/:id/observations', (req, res) => {
     var returnArr = [];
     for(var i = 0; i < stations.length; i++){
         if(station == stations[i].id){
-            //console.log(stations[i].id);
             for(var j = 0; j < stations[i].observations.length; j++){
                 for(var k = 0; k < observations.length; k++){
-                    //console.log(stations[i].observations);
-                    //console.log(stations[i].observations[j]);
-                    //console.log(observations[k]);
                     if(stations[i].observations[j] == observations[k].id){
                         var deletedOb = observations.splice(k, 1);
                         returnArr.push(deletedOb);
