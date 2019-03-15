@@ -12,8 +12,8 @@ var stations = [
     {id: 2, description: "Akureyri", lat: 65.6856, lon: 18.1002, observations: [1]}
 ];
 var observations = [
-    {id: 1, date: 1551885104266, returnArr: -2.7, windSpeed: 2.0, windDir: "ese", prec: 0.0, hum: 82.0},
-    {id: 2, date: 1551885137409, returnArr: 0.6, windSpeed: 5.0, windDir: "n", prec: 0.0, hum: 50.0},
+    {id: 1, date: 1551885104266, temp: -2.7, windSpeed: 2.0, windDir: "ese", prec: 0.0, hum: 82.0},
+    {id: 2, date: 1551885137409, temp: 0.6, windSpeed: 5.0, windDir: "n", prec: 0.0, hum: 50.0},
 ];
 function getMaxId(stations){
     var maxId = 1;
@@ -149,12 +149,12 @@ app.delete('/stations', (req, res) => {
 
 
 // Observations
-app.get('/observations/:station', (req, res) => {
+app.get('/stations/:id/observations', (req, res) => {
     returnArr = [];
-    var station = Number(req.params.station);
-    console.log(station);
+    var sId = Number(req.params.id);
+    console.log(sId);
     for(var i = 0; i < stations.length; i++){
-        if(station === stations[i].id){
+        if(sId === stations[i].id){
             for(var j = 0; j < stations[i].observations.length; j++){
                 console.log("length: " + stations[i].observations.length);
                 for(var k = 0; k < observations.length; k++){
@@ -174,10 +174,9 @@ app.get('/observations/:station', (req, res) => {
     res.status(404).json({message: "No station with id: " + req.params.station});
 });
 
-app.get('/observations/:station/:id', (req, res) => {
+app.get('/stations/:station/observations/:id', (req, res) => {
     var id = Number(req.params.id);
     var station = Number(req.params.station);
-    var observationFound = null;
     console.log(id);
     console.log(observations.length);
     for(var i = 0; i < stations.length; i++){
@@ -192,10 +191,10 @@ app.get('/observations/:station/:id', (req, res) => {
             }
         }
     }
-    res.status(404).json({message: "No obeservation with id: " + id});
+    res.status(404).json({message: "No obeservation with id: " + id + " in station with id: " + station});
 });
 
-app.post('/observations/:station', (req, res) => {
+app.post('/stations/:id/observations', (req, res) => {
     if(req.body === null || req.body.temp === undefined || req.body.windSpeed === undefined || 
         req.body.windDir === undefined || req.body.prec === undefined || req.body.hum === undefined){
         res.status(404).json({'message': "Missing station information!"});
@@ -212,7 +211,7 @@ app.post('/observations/:station', (req, res) => {
         }
         console.log(newObservation.id);
         for(var i = 0; i < stations.length; i++){
-            if(req.params.station == stations[i].id){
+            if(req.params.id == stations[i].id){
                 stations[i].observations.push(newObservation.id);
             }
         }
@@ -221,7 +220,7 @@ app.post('/observations/:station', (req, res) => {
     }
 });
 
-app.delete('/observations/:station/:id', (req, res) => {
+app.delete('/stations/:station/observations/:id', (req, res) => {
     var id = Number(req.params.id);
     var station = Number(req.params.station);
     for(var i = 0; i < stations.length; i++){
@@ -241,8 +240,8 @@ app.delete('/observations/:station/:id', (req, res) => {
     res.status(404).json({message: "No obeservation with id: " + id + " in station with id: " + station});
 });
 
-app.delete('/observations/:station', (req, res) => {
-    var station = req.params.station;
+app.delete('/stations/:id/observations', (req, res) => {
+    var station = req.params.id;
     var returnArr = [];
     for(var i = 0; i < stations.length; i++){
         if(station == stations[i].id){
