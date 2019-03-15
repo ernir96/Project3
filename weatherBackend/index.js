@@ -281,6 +281,11 @@ app.delete('/observations/:station', (req, res) => {
     res.status(200).json(returnArr);
 });
 
+//Default: Not supported
+app.use('*', (req, res) => {
+    res.status(405).send('Operation not supported.');
+});
+
 
 app.listen(port, hostname, () => {
     console.log('Express app listening on port ' + port);
