@@ -151,6 +151,7 @@ app.delete('/api/v1/stations', (req, res) => {
 function validateObservationNumbers(req) {
     if(isNaN(req.body.temp) || isNaN(req.body.prec)
     || isNaN(req.body.windSpeed) || isNaN(req.body.hum)) {
+        console.log("isnan");
         return false;
     } else if(req.body.prec < 0) {
         return false;
@@ -208,27 +209,35 @@ app.get('/api/v1/stations/:station/observations/:id', (req, res) => {
 
 app.post('/api/v1/stations/:id/observations', (req, res) => {
     if(req.body === null || !validateObservationNumbers(req)){
-        res.status(404).json({'message': "Missing station information!"});
+        res.status(400).json({'message': "Not valid"});
+        return;
     }
-    else{
-        var newObservation = {
-            id: ++observationId,
-            date: Date.now(),
-            temp: req.body.temp,
-            windSpeed: req.body.windSpeed,
-            windDir: req.body.windDir,
-            prec: req.body.prec,
-            hum: req.body.hum
+    var found = false;
+    for(var i = 0; i < stations.length; i++){
+        if(req.params.id == stations[i].id){
+            found = true;
         }
-        console.log(newObservation.id);
-        for(var i = 0; i < stations.length; i++){
-            if(req.params.id == stations[i].id){
-                stations[i].observations.push(newObservation.id);
-            }
-        }
-        observations.push(newObservation);
-        res.status(201).json(newObservation);
     }
+    if(found == false){
+        res.status(404).json({'message': "No station with id: " + req.params.id});
+    }
+    var newObservation = {
+        id: ++observationId,
+        date: Date.now(),
+        temp: req.body.temp,
+        windSpeed: req.body.windSpeed,
+        windDir: req.body.windDir,
+        prec: req.body.prec,
+        hum: req.body.hum
+    }
+    console.log(newObservation.id);
+    for(var i = 0; i < stations.length; i++){
+        if(req.params.id == stations[i].id){
+            stations[i].observations.push(newObservation.id);
+        }
+    }
+    observations.push(newObservation);
+    res.status(201).json(newObservation);
 });
 
 app.delete('/api/v1/stations/:station/observations/:id', (req, res) => {
