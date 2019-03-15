@@ -149,7 +149,7 @@ app.delete('/api/v1/stations', (req, res) => {
 
 // Observations
 function validateObservationNumbers(req) {
-    if(isNaN(req.body.temp) || isNaN(req.body.prec) || isNaN(req.body.date) 
+    if(isNaN(req.body.temp) || isNaN(req.body.prec)
     || isNaN(req.body.windSpeed) || isNaN(req.body.hum)) {
         return false;
     } else if(req.body.prec < 0) {
@@ -282,9 +282,6 @@ app.delete('/api/v1/stations/:id/observations', (req, res) => {
 app.use('*', (req, res) => {
     res.status(405).send('Operation not supported.');
 });
-
-
-module.exports = app;
 
 app.listen(port, hostname, () => {
     console.log('Express app listening on port ' + port);
