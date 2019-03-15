@@ -30,9 +30,9 @@ var observationId = getMaxId(observations);
 function validateStationNumbers(req) {
     if(isNaN(req.body.lat) || isNaN(req.body.lon)) {
         return false;
-    } else if(req.body.lat < -90 || req.body.lat > 90) {
+    } else if(req.body.lat <= -90 || req.body.lat >= 90) {
         return false;
-    } else if(req.body.lon < -180 || req.body.lon > 180) {
+    } else if(req.body.lon <= -180 || req.body.lon >= 180) {
         return false;
     } else {
         return true;
@@ -65,8 +65,8 @@ app.post('/api/v1/stations', (req, res) => {
 
     if(req.body === null || req.body.description === undefined
         || !validateStationNumbers(req)){
-        res.status(404).json({
-            'message': "Missing or invalid station information!"
+        res.status(400).json({
+            'message': "Invalid station information!"
         }); 
     } else {
         let newStation = {
@@ -106,8 +106,8 @@ app.delete('/api/v1/stations/:id', (req, res) => {
 app.put('/api/v1/stations/:id', (req, res) => {
     if(req.body === null || req.body.description === undefined
         || !validateStationNumbers(req)){
-        res.status(404).json({
-            'message': "Missing station information!"
+        res.status(400).json({
+            'message': "Invalid station information!"
         });
     } else {
         var returnArr = [];
@@ -116,15 +116,15 @@ app.put('/api/v1/stations/:id', (req, res) => {
                 stations[i].description = req.body.description;
                 stations[i].lat = req.body.lat;
                 stations[i].lon = req.body.lon;
-                stations[i].observations = [];
+                stations[i].observations = req.body.observations;
 
-                returnArr.push({description: req.body.description, lat: req.body.lat, lon: req.body.lon, observations: []})
+                returnArr.push({description: req.body.description, lat: req.body.lat, lon: req.body.lon, observations: req.body.observations})
                 res.status(200).json(returnArr);
                 return;
             }
         }
         res.status(404).json({
-            'message': "Station with id " + req.params.id + " doesn't exist."
+            'message': "Station with id " + req.params.id + " not found."
         });
     }
 });
