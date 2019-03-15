@@ -1,8 +1,7 @@
-//Sample data for Project 3
-const express = require('express');
-const app = express();
 const hostname = '127.0.0.1';
 const port = 3000;
+const express = require('express');
+const app = express();
 const bodyParser = require('body-parser');
 app.use(bodyParser.json())
 //The following is an example of an array of two stations. 
@@ -40,7 +39,7 @@ function validateStationNumbers(req) {
     }
 }
 
-app.get('/stations', (req, res) => {
+app.get('/api/v1/stations', (req, res) => {
     var returnArr = [];
     for(var i = 0; i < stations.length; i++){
         returnArr.push({id: stations[i].id, description: stations[i].description});
@@ -48,7 +47,7 @@ app.get('/stations', (req, res) => {
     res.status(200).json(returnArr); 
 });
 
-app.get('/stations/:id', (req, res) => {
+app.get('/api/v1/stations/:id', (req, res) => {
     for(let i = 0; i < stations.length; i++){
         if(stations[i].id == req.params.id) {
             res.status(200).json(stations[i]);
@@ -62,7 +61,7 @@ app.get('/stations/:id', (req, res) => {
 
 
 
-app.post('/stations', (req, res) => {
+app.post('/api/v1/stations', (req, res) => {
 
     if(req.body === null || req.body.description === undefined
         || !validateStationNumbers(req)){
@@ -82,7 +81,7 @@ app.post('/stations', (req, res) => {
     }
 });
 
-app.delete('/stations/:id', (req, res) => {
+app.delete('/api/v1/stations/:id', (req, res) => {
     for(let i = 0; i < stations.length; i++){
         if(stations[i].id == req.params.id) {
             //delete all observations
@@ -104,7 +103,7 @@ app.delete('/stations/:id', (req, res) => {
     });  
 });
 
-app.put('/stations/:id', (req, res) => {
+app.put('/api/v1/stations/:id', (req, res) => {
     if(req.body === null || req.body.description === undefined
         || !validateStationNumbers(req)){
         res.status(404).json({
@@ -130,7 +129,7 @@ app.put('/stations/:id', (req, res) => {
     }
 });
 
-app.delete('/stations', (req, res) => {
+app.delete('/api/v1/stations', (req, res) => {
     var returnArr = stations.slice();
     for(var i = 0; i < stations.length; i++){
         for(var j = 0; j < stations[i].observations.length; j++){
@@ -163,7 +162,7 @@ function validateObservationNumbers(req) {
     }
 }
 
-app.get('/stations/:id/observations', (req, res) => {
+app.get('/api/v1/stations/:id/observations', (req, res) => {
     returnArr = [];
     var sId = Number(req.params.id);
     console.log(sId);
@@ -188,7 +187,7 @@ app.get('/stations/:id/observations', (req, res) => {
     res.status(404).json({message: "No station with id: " + req.params.station});
 });
 
-app.get('/stations/:station/observations/:id', (req, res) => {
+app.get('/api/v1/stations/:station/observations/:id', (req, res) => {
     var id = Number(req.params.id);
     var station = Number(req.params.station);
     console.log(id);
@@ -205,10 +204,10 @@ app.get('/stations/:station/observations/:id', (req, res) => {
             }
         }
     }
-    res.status(404).json({message: "No obeservation with id: " + id + " in station with id: " + station});
+    res.status(404).json({message: "No observation with id: " + id + " in station with id: " + station});
 });
 
-app.post('/stations/:id/observations', (req, res) => {
+app.post('/api/v1/stations/:id/observations', (req, res) => {
     if(req.body === null || !validateObservationNumbers(req)){
         res.status(400).json({'message': "Not valid"});
         return;
@@ -241,7 +240,7 @@ app.post('/stations/:id/observations', (req, res) => {
     res.status(201).json(newObservation);
 });
 
-app.delete('/stations/:station/observations/:id', (req, res) => {
+app.delete('/api/v1/stations/:station/observations/:id', (req, res) => {
     var id = Number(req.params.id);
     var station = Number(req.params.station);
     for(var i = 0; i < stations.length; i++){
@@ -258,10 +257,10 @@ app.delete('/stations/:station/observations/:id', (req, res) => {
             return;
         }
     }
-    res.status(404).json({message: "No obeservation with id: " + id + " in station with id: " + station});
+    res.status(404).json({message: "No observation with id: " + id + " in station with id: " + station});
 });
 
-app.delete('/stations/:id/observations', (req, res) => {
+app.delete('/api/v1/stations/:id/observations', (req, res) => {
     var station = req.params.id;
     var returnArr = [];
     for(var i = 0; i < stations.length; i++){
@@ -273,7 +272,6 @@ app.delete('/stations/:id/observations', (req, res) => {
                     //console.log(stations[i].observations[j]);
                     //console.log(observations[k]);
                     if(stations[i].observations[j] == observations[k].id){
-                        //console.log(observations[k].);
                         var deletedOb = observations.splice(k, 1);
                         returnArr.push(deletedOb);
                     }
@@ -291,9 +289,11 @@ app.delete('/stations/:id/observations', (req, res) => {
 
 //Default: Not supported
 app.use('*', (req, res) => {
-    res.status(400).send('Operation not supported.');
+    res.status(405).send('Operation not supported.');
 });
 
+
+module.exports = app;
 
 app.listen(port, hostname, () => {
     console.log('Express app listening on port ' + port);
