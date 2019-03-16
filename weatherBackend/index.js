@@ -39,6 +39,7 @@ function validateStationNumbers(req) {
     }
 }
 
+// (1.1) Get all stations (Only Id's and descriptions)
 app.get('/api/v1/stations', (req, res) => {
     var returnArr = [];
     for(var i = 0; i < stations.length; i++){
@@ -47,6 +48,7 @@ app.get('/api/v1/stations', (req, res) => {
     res.status(200).json(returnArr); 
 });
 
+// (1.2) Get a station with :id
 app.get('/api/v1/stations/:id', (req, res) => {
     for(let i = 0; i < stations.length; i++){
         if(stations[i].id == req.params.id) {
@@ -59,10 +61,8 @@ app.get('/api/v1/stations/:id', (req, res) => {
     });    
 });
 
-
-
+// (1.3) Post(create) a new station
 app.post('/api/v1/stations', (req, res) => {
-
     if(req.body === null || req.body.description === undefined
         || !validateStationNumbers(req)){
         res.status(400).json({
@@ -75,12 +75,13 @@ app.post('/api/v1/stations', (req, res) => {
             lat: req.body.lat,
             lon: req.body.lon,
             observations: []
-            }
+        }
         stations.push(newStation);
         res.status(201).json(newStation);
     }
 });
 
+// (1.4) Delete a station with :id
 app.delete('/api/v1/stations/:id', (req, res) => {
     for(let i = 0; i < stations.length; i++){
         if(stations[i].id == req.params.id) {
@@ -103,11 +104,12 @@ app.delete('/api/v1/stations/:id', (req, res) => {
     });  
 });
 
+// (1.5) Put(update) a station with :id
 app.put('/api/v1/stations/:id', (req, res) => {
     if(req.body === null || req.body.description === undefined
         || req.body.observations === undefined || !validateStationNumbers(req)){
         res.status(400).json({
-            'message': "Missing station information!"
+            'message': "Invalid station information!"
         });
     } else {
         var returnArr = [];
@@ -129,6 +131,7 @@ app.put('/api/v1/stations/:id', (req, res) => {
     }
 });
 
+// (1.6) Delete all stations
 app.delete('/api/v1/stations', (req, res) => {
     var returnArr = stations.slice();
     for(var i = 0; i < stations.length; i++){
@@ -161,6 +164,7 @@ function validateObservationNumbers(req) {
     }
 }
 
+// (2.1) Get all observations for station with :id
 app.get('/api/v1/stations/:id/observations', (req, res) => {
     returnArr = [];
     var sId = Number(req.params.id);
@@ -176,9 +180,10 @@ app.get('/api/v1/stations/:id/observations', (req, res) => {
             res.status(200).json(returnArr);
         }
     }
-    res.status(404).json({message: "No station with id: " + req.params.station});
+    res.status(404).json({message: "No station with id: " + req.params.id});
 });
 
+// (2.2) Get observation with :id for station with id == :station
 app.get('/api/v1/stations/:station/observations/:id', (req, res) => {
     var id = Number(req.params.id);
     var station = Number(req.params.station);
@@ -197,9 +202,10 @@ app.get('/api/v1/stations/:station/observations/:id', (req, res) => {
     res.status(404).json({message: "No observation with id: " + id + " in station with id: " + station});
 });
 
+// (2.3) Post(create) an observation for station with :id
 app.post('/api/v1/stations/:id/observations', (req, res) => {
     if(req.body === null || !validateObservationNumbers(req)){
-        res.status(400).json({'message': "Not valid"});
+        res.status(400).json({'message': "Invalid observation information!"});
         return;
     }
     var found = false;
@@ -229,6 +235,7 @@ app.post('/api/v1/stations/:id/observations', (req, res) => {
     res.status(201).json(newObservation);
 });
 
+// (2.4) Delete observation with :id for station with id == :station
 app.delete('/api/v1/stations/:station/observations/:id', (req, res) => {
     var id = Number(req.params.id);
     var station = Number(req.params.station);
@@ -249,6 +256,7 @@ app.delete('/api/v1/stations/:station/observations/:id', (req, res) => {
     res.status(404).json({message: "No observation with id: " + id + " in station with id: " + station});
 });
 
+// (2.5) Delete all observations for a station with :id
 app.delete('/api/v1/stations/:id/observations', (req, res) => {
     var station = req.params.id;
     var returnArr = [];
@@ -267,12 +275,14 @@ app.delete('/api/v1/stations/:id/observations', (req, res) => {
     for(var i = 0; i < stations.length; i++){
         if(station == stations[i].id){
             stations[i].observations = [];
+            res.status(200).json(returnArr);
+            return;
         }
     }
-    res.status(200).json(returnArr);
+    res.status(404).json({message: "Station with id " + station + " not found."});
 });
 
-//Default: Not supported
+//Default: Use for all invalid endpoints
 app.use('*', (req, res) => {
     res.status(405).send('Operation not supported.');
 });
